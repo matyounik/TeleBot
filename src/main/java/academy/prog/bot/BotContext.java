@@ -1,6 +1,6 @@
-package ua.kiev.prog.bot;
+package academy.prog.bot;
 
-import ua.kiev.prog.model.User;
+import academy.prog.model.User;
 
 public class BotContext {
     private final ChatBot bot;

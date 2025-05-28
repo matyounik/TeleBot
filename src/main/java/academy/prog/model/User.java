@@ -1,8 +1,8 @@
-package ua.kiev.prog.model;
+package academy.prog.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 @Entity
 public class User {
@@ -11,7 +11,7 @@ public class User {
     private Long id;
 
     private Long chatId;
-    private Integer stateId;
+    private Integer stateId; // H -> Ph -> Em -> Th
     private String phone;
     private String email;
     private Boolean admin;

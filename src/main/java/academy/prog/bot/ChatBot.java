@@ -1,4 +1,4 @@
-package ua.kiev.prog.bot;
+package academy.prog.bot;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ua.kiev.prog.model.User;
-import ua.kiev.prog.service.UserService;
+import academy.prog.model.User;
+import academy.prog.service.UserService;
 
 import java.io.InputStream;
 import java.util.List;
@@ -63,6 +64,9 @@ public class ChatBot extends TelegramLongPollingBot {
         BotContext context;
         BotState state;
 
+        // H -> Ph -> Em -> Th
+        // 1 -> 2! -> 3! -> 4
+
         if (user == null) {
             state = BotState.getInitialState();
 
@@ -82,6 +86,7 @@ public class ChatBot extends TelegramLongPollingBot {
 
         state.handleInput(context);
 
+        // 1 -> 2 -> 3!
         do {
             state = state.nextState();
             state.enter(context);
@@ -113,9 +118,9 @@ public class ChatBot extends TelegramLongPollingBot {
     }
 
     private void sendMessage(long chatId, String text) {
-        SendMessage message = new SendMessage()
-                .setChatId(chatId)
-                .setText(text);
+        SendMessage message = new SendMessage();
+        message.setChatId(Long.toString(chatId));
+        message.setText(text);
         try {
             execute(message);
         } catch (TelegramApiException e) {
@@ -127,9 +132,9 @@ public class ChatBot extends TelegramLongPollingBot {
         InputStream is = getClass().getClassLoader()
                 .getResourceAsStream("test.png");
 
-        SendPhoto message = new SendPhoto()
-                .setChatId(chatId)
-                .setPhoto("test", is);
+        SendPhoto message = new SendPhoto();
+        message.setChatId(Long.toString(chatId));
+        message.setPhoto(new InputFile(is, "test"));
         try {
             execute(message);
         } catch (TelegramApiException e) {

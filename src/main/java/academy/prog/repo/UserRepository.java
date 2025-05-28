@@ -1,8 +1,8 @@
-package ua.kiev.prog.repo;
+package academy.prog.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ua.kiev.prog.model.User;
+import academy.prog.model.User;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package ua.kiev.prog.mail;
+package academy.prog.mail;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -6,8 +6,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ua.kiev.prog.model.User;
-import ua.kiev.prog.service.UserService;
+import academy.prog.model.User;
+import academy.prog.service.UserService;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class NotificationService {
         this.emailSender = emailSender;
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedDelay = 10000)
     public void sendNewApplications() {
         List<User> users = userService.findNewUsers();
         if (users.size() == 0)

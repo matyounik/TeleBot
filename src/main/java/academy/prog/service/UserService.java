@@ -1,9 +1,9 @@
-package ua.kiev.prog.service;
+package academy.prog.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.kiev.prog.model.User;
-import ua.kiev.prog.repo.UserRepository;
+import academy.prog.model.User;
+import academy.prog.repo.UserRepository;
 
 import java.util.List;
 
