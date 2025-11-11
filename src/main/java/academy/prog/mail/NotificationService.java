@@ -41,12 +41,13 @@ public class NotificationService {
         StringBuilder sb = new StringBuilder();
 
         users.forEach(user ->
-            sb.append("Phone: ")
-                    .append(user.getPhone())
-                    .append("\r\n")
-                    .append("Email: ")
-                    .append(user.getEmail())
-                    .append("\r\n\r\n")
+                sb.append("Phone: ")
+                        .append(user.getPhone())
+                        .append("\r\n")
+                        .append("Email: ")
+                        .append(user.getEmail())
+                        .append("\r\n\r\n")
+
         );
 
         sendEmail(sb.toString());
@@ -60,6 +61,15 @@ public class NotificationService {
         message.setSubject(emailSubject);
         message.setText(text);
 
+        emailSender.send(message);
+    }
+
+    public void sendEmailToUser(String to, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setFrom(emailFrom);
+        message.setSubject(emailSubject);
+        message.setText(text);
         emailSender.send(message);
     }
 }

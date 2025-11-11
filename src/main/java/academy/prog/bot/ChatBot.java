@@ -11,11 +11,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import academy.prog.model.User;
 import academy.prog.service.UserService;
+import academy.prog.mail.NotificationService;
 
 import java.io.InputStream;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Component
 @PropertySource("classpath:telegram.properties")
@@ -34,8 +38,16 @@ public class ChatBot extends TelegramLongPollingBot {
 
     private final UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     public ChatBot(UserService userService) {
         this.userService = userService;
+    }
+
+    public UserService getUserService() {
+        return userService;
     }
 
     @Override
@@ -64,12 +76,8 @@ public class ChatBot extends TelegramLongPollingBot {
         BotContext context;
         BotState state;
 
-        // H -> Ph -> Em -> Th
-        // 1 -> 2! -> 3! -> 4
-
         if (user == null) {
             state = BotState.getInitialState();
-
             user = new User(chatId, state.ordinal());
             userService.addUser(user);
 
@@ -86,7 +94,6 @@ public class ChatBot extends TelegramLongPollingBot {
 
         state.handleInput(context);
 
-        // 1 -> 2 -> 3!
         do {
             state = state.nextState();
             state.enter(context);
@@ -97,20 +104,28 @@ public class ChatBot extends TelegramLongPollingBot {
     }
 
     private boolean checkIfAdminCommand(User user, String text) {
-        if (user == null || !user.getAdmin())
+        if (user == null || !Boolean.TRUE.equals(user.getAdmin()))
             return false;
 
         if (text.startsWith(BROADCAST)) {
-            LOGGER.info("Admin command received: " + BROADCAST);
-
             text = text.substring(BROADCAST.length());
             broadcast(text);
-
             return true;
-        } else if (text.equals(LIST_USERS)) {
-            LOGGER.info("Admin command received: " + LIST_USERS);
 
+        } else if (text.equals(LIST_USERS)) {
             listUsers(user);
+            return true;
+
+        } else if (text.startsWith("sendEmail ")) {
+            String[] parts = text.split(" ", 3);
+            if (parts.length < 3) {
+                sendMessage(user.getChatId(), "Format: sendEmail <userId> <message>");
+                return true;
+            }
+
+            Long userId = Long.parseLong(parts[1]);
+            String msg = parts[2];
+            sendEmailToUser(userId, msg);
             return true;
         }
 
@@ -129,8 +144,7 @@ public class ChatBot extends TelegramLongPollingBot {
     }
 
     private void sendPhoto(long chatId) {
-        InputStream is = getClass().getClassLoader()
-                .getResourceAsStream("test.png");
+        InputStream is = getClass().getClassLoader().getResourceAsStream("test.png");
 
         SendPhoto message = new SendPhoto();
         message.setChatId(Long.toString(chatId));
@@ -147,12 +161,12 @@ public class ChatBot extends TelegramLongPollingBot {
         List<User> users = userService.findAllUsers();
 
         users.forEach(user ->
-            sb.append(user.getId())
-                    .append(' ')
-                    .append(user.getPhone())
-                    .append(' ')
-                    .append(user.getEmail())
-                    .append("\r\n")
+                sb.append(user.getId())
+                        .append(' ')
+                        .append(user.getPhone())
+                        .append(' ')
+                        .append(user.getEmail())
+                        .append("\r\n")
         );
 
         sendPhoto(admin.getChatId());
@@ -160,7 +174,22 @@ public class ChatBot extends TelegramLongPollingBot {
     }
 
     private void broadcast(String text) {
-        List<User> users = userService.findAllUsers();
-        users.forEach(user -> sendMessage(user.getChatId(), text));
+        int page = 0;
+        int size = 500;
+        List<User> users;
+
+        do {
+            users = userService.findUsersPage(page, size);
+            users.forEach(u -> sendMessage(u.getChatId(), text));
+            page++;
+        } while (!users.isEmpty());
+    }
+
+    private void sendEmailToUser(Long userId, String text) {
+        User target = userService.findById(userId);
+        if (target == null || target.getEmail() == null)
+            return;
+
+        notificationService.sendEmailToUser(target.getEmail(), text);
     }
 }

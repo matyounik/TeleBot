@@ -1,50 +1,54 @@
 package academy.prog.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import academy.prog.model.User;
 import academy.prog.repo.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
 
+    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Transactional(readOnly = true)
-    public User findByChatId(long id) {
-        return userRepository.findByChatId(id);
+    public User findByChatId(long chatId) {
+        return userRepository.findByChatId(chatId);
     }
 
-    @Transactional(readOnly = true)
+    public void addUser(User user) {
+        userRepository.save(user);
+    }
+
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
+
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
-    @Transactional
+    public User findById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.orElse(null);
+    }
+
+    public List<User> findUsersPage(int page, int size) {
+        return userRepository.findAll(PageRequest.of(page, size)).getContent();
+    }
+
+    public List<User> findByNotifiedFalse() {
+        return userRepository.findByNotifiedFalse();
+    }
+
     public List<User> findNewUsers() {
-        List<User> users = userRepository.findNewUsers();
-
-        users.forEach((user) -> user.setNotified(true));
-        userRepository.saveAll(users);
-
-        return users;
-    }
-
-    @Transactional
-    public void addUser(User user) {
-        user.setAdmin(userRepository.count() == 0);
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void updateUser(User user) {
-        userRepository.save(user);
+        return userRepository.findByNotifiedFalse();
     }
 }
-

@@ -1,5 +1,6 @@
 package academy.prog.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -14,8 +15,12 @@ public class User {
     private Integer stateId; // H -> Ph -> Em -> Th
     private String phone;
     private String email;
-    private Boolean admin;
-    private Boolean notified = false;
+
+    @Column(nullable = false)
+    private boolean admin = false;
+
+    @Column(nullable = false)
+    private boolean notified = false;
 
     public User() {
     }
@@ -25,7 +30,7 @@ public class User {
         this.stateId = state;
     }
 
-    public User(Long chatId, Integer stateId, Boolean admin) {
+    public User(Long chatId, Integer stateId, boolean admin) {
         this.chatId = chatId;
         this.stateId = stateId;
         this.admin = admin;
@@ -71,19 +76,19 @@ public class User {
         this.email = email;
     }
 
-    public Boolean getAdmin() {
+    public boolean getAdmin() {
         return admin;
     }
 
-    public void setAdmin(Boolean admin) {
+    public void setAdmin(boolean admin) {
         this.admin = admin;
     }
 
-    public Boolean getNotified() {
+    public boolean getNotified() {
         return notified;
     }
 
-    public void setNotified(Boolean notified) {
+    public void setNotified(boolean notified) {
         this.notified = notified;
     }
 }
