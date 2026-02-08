@@ -2,15 +2,14 @@ package academy.prog.repo;
 
 import academy.prog.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import java.util.List;
+
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByChatId(long chatId);
+    Optional<User> findByChatId(Long chatId);
 
-    Page<User> findAll(Pageable pageable);
+    Optional<User> findByPhone(String phone);
 
-    List<User> findByNotifiedFalse();
+    Optional<User> findByEmail(String email);
 }

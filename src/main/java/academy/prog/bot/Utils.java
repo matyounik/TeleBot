@@ -1,9 +1,20 @@
 package academy.prog.bot;
 
-import org.apache.commons.validator.EmailValidator;
+import java.util.regex.Pattern;
 
 public class Utils {
-    public static boolean isValidEmailAddress(String email) {
-        return EmailValidator.getInstance().isValid(email);
+
+    private static final Pattern PHONE =
+            Pattern.compile("^\\d{9,15}$");
+
+    private static final Pattern EMAIL =
+            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
+    public static boolean isValidPhone(String text) {
+        return text != null && PHONE.matcher(text).matches();
+    }
+
+    public static boolean isValidEmail(String text) {
+        return text != null && EMAIL.matcher(text).matches();
     }
 }

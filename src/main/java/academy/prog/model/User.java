@@ -1,94 +1,70 @@
 package academy.prog.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Table(name = "users")
 public class User {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private Long chatId;
-    private Integer stateId; // H -> Ph -> Em -> Th
+
+    private String lang;
     private String phone;
     private String email;
+    private boolean registered;
+    private boolean loggedIn;
 
-    @Column(nullable = false)
-    private boolean admin = false;
+    private String name;
+    private String studentClass;
+    private String password;
 
-    @Column(nullable = false)
-    private boolean notified = false;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
-    public User() {
-    }
+    /*  GETTERS / SETTERS */
 
-    public User(Long chatId, Integer state) {
-        this.chatId = chatId;
-        this.stateId = state;
-    }
+    public Long getId() { return id; }
+    public Long getChatId() { return chatId; }
+    public void setChatId(Long chatId) { this.chatId = chatId; }
 
-    public User(Long chatId, Integer stateId, boolean admin) {
-        this.chatId = chatId;
-        this.stateId = stateId;
-        this.admin = admin;
-    }
+    public String getLang() { return lang; }
+    public void setLang(String lang) { this.lang = lang; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public Long getChatId() {
-        return chatId;
-    }
+    public boolean isRegistered() { return registered; }
+    public void setRegistered(boolean registered) { this.registered = registered; }
 
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
-    }
+    public boolean isLoggedIn() { return loggedIn; }
+    public void setLoggedIn(boolean loggedIn) { this.loggedIn = loggedIn; }
 
-    public Integer getStateId() {
-        return stateId;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setStateId(Integer stateId) {
-        this.stateId = stateId;
-    }
+    public String getStudentClass() { return studentClass; }
+    public void setStudentClass(String studentClass) { this.studentClass = studentClass; }
 
-    public String getPhone() {
-        return phone;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    public Set<Role> getRoles() { return roles; }
+    public void setRoles(Set<Role> roles) { this.roles = roles; }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
-    public boolean getNotified() {
-        return notified;
-    }
-
-    public void setNotified(boolean notified) {
-        this.notified = notified;
-    }
+    public boolean isEnabled() { return true; } // или логика блокировки
 }

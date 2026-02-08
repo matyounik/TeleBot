@@ -1,31 +1,45 @@
 package academy.prog.bot;
 
 import academy.prog.model.User;
+import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Component
 public class BotContext {
-    private final ChatBot bot;
-    private final User user;
-    private final String input;
 
-    public static BotContext of(ChatBot bot, User user, String text) {
-        return new BotContext(bot, user, text);
+    private final Map<Long, BotState> states = new ConcurrentHashMap<>();
+    private final Map<Long, String> scheduleDay = new ConcurrentHashMap<>();
+    private final Map<Long, Long> selectedStudent = new ConcurrentHashMap<>();
+
+    public BotState getState(User user) {
+        return states.getOrDefault(user.getChatId(), BotState.START);
     }
 
-    private BotContext(ChatBot bot, User user, String input) {
-        this.bot = bot;
-        this.user = user;
-        this.input = input;
+    public void setState(User user, BotState state) {
+        states.put(user.getChatId(), state);
     }
 
-    public ChatBot getBot() {
-        return bot;
+    public void clearState(User user) {
+        states.remove(user.getChatId());
+        scheduleDay.remove(user.getChatId());
+        selectedStudent.remove(user.getChatId());
     }
 
-    public User getUser() {
-        return user;
+    public String getScheduleDay(User user) {
+        return scheduleDay.getOrDefault(user.getChatId(), WeekDays.today());
     }
 
-    public String getInput() {
-        return input;
+    public void setScheduleDay(User user, String day) {
+        scheduleDay.put(user.getChatId(), day);
+    }
+
+    public void setSelectedStudent(User teacher, Long studentId) {
+        selectedStudent.put(teacher.getChatId(), studentId);
+    }
+
+    public Long getSelectedStudent(User teacher) {
+        return selectedStudent.get(teacher.getChatId());
     }
 }
